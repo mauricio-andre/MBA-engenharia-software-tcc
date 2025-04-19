@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  grpc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROJECT: Grpc/Grpc.csproj
+    entrypoint: ["dotnet", "Grpc.dll"]
+    environment:
+      - DB_PATH=/app/Data/database.db
+    volumes:
+      - ./Commons/Data/:/app/Data/
+    networks:
+      - app-network
+
+  monolito:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROJECT: Monolito/Monolito.csproj
+    entrypoint: ["dotnet", "Monolito.dll"]
+    environment:
+      - DB_PATH=/app/Data/database.db
+    volumes:
+      - ./Monolito/output:/app/output
+      - ./Commons/Data/:/app/Data/
+    networks:
+      - app-network
+
+  workers:
+    depends_on:
+      - grpc
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROJECT: Workers/Workers.csproj
+    entrypoint: ["dotnet", "Workers.dll"]
+    environment:
+      - GRPC_URI=http://grpc:8080
+    volumes:
+      - ./Workers/output:/app/output
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

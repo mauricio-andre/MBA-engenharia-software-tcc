@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Grpc";
+
+package pessoa;
+
+service Pessoa {
+    rpc GetPessoaList (GetPessoaRequest) returns (stream PessoaReply);
+}
+
+message GetPessoaRequest {
+    int32 skip = 1;
+    int32 take = 2;
+}
+
+message PessoaReply {
+    int32 id = 1;
+    string nome = 2;
+    string email = 3;
+    int64 data_nascimento_timestamp = 4;
+    string cidade = 5;
+}

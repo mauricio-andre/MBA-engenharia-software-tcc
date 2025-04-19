@@ -1,0 +1,11 @@
+# Trabalho de Conclusão de Curso
+
+**MBA em engenharia de Software**
+
+Projeto simples que compõe o TCC do MBA, destinasse apenas a executar um projeto console que lê uma base SQLite e escrever um arquivo CSV, e faz o mesmo dividindo a parte de leitura da base em uma aplicação gRPC e console que conecta na API e escreve o arquivo com os dados recebidos.
+
+Os arquivos CSVs escritos são depositados em uma pasta chamada output nos seus respectivos projetos, dentro há um arquivo que armazena o numero de linhas e o tempo decorrido em todo o processo contato em milissegundos, e uma pasta report com os dados exportados em si.
+
+Para executar o projeto monolito use o comandos `docker compse up --build monolito`
+
+Para executar a api grpc e o worker use os respectivos comandos `docker compse up --build grpc` e `docker compse up --build workers`. É necessário que o gRPC esteja no ar para que o worker funcione.
