@@ -18,34 +18,40 @@ public abstract class BaseService : IBaseService
         100_000,
         250_000,
         500_000,
-        1_000_000
+        750_000,
+        1_000_000,
+        5_000_000,
+        10_000_000,
     ];
 
     public async Task Run()
     {
-        string basePath = PrepareBasePatch();
-        await using var relatorioWriter = new StreamWriter(
-            Path.Combine(basePath, "relatorio.csv"),
-            true,
-            Encoding.UTF8);
-
-        foreach (var limit in rateList)
+        for (int i = 0; i < 10; i++)
         {
-            var stopwatch = Stopwatch.StartNew();
+            string basePath = PrepareBasePatch();
+            await using var relatorioWriter = new StreamWriter(
+                Path.Combine(basePath, "relatorio.csv"),
+                true,
+                Encoding.UTF8);
 
-            var csvPath = Path.Combine(basePath, "report", $"pessoas_{limit}.csv");
-            await using(var writer = new StreamWriter(csvPath, true, Encoding.UTF8))
+            foreach (var limit in rateList)
             {
-                await writer.WriteLineAsync("Id;Nome;Email;DataNascimento;Cidade");
-                await LoopWriteLines(limit, writer);
-                CloseChannels();
+                var stopwatch = Stopwatch.StartNew();
+
+                var csvPath = Path.Combine(basePath, "report", $"pessoas_{limit}.csv");
+                await using (var writer = new StreamWriter(csvPath, true, Encoding.UTF8))
+                {
+                    await writer.WriteLineAsync("Id;Nome;Email;DataNascimento;Cidade");
+                    await LoopWriteLines(limit, writer);
+                    CloseChannels();
+                }
+
+                stopwatch.Stop();
+
+                await relatorioWriter.WriteLineAsync($"{limit};{stopwatch.ElapsedMilliseconds}");
+
+                Console.WriteLine("O bloco {0} processou em {1} milissegundos", limit, stopwatch.ElapsedMilliseconds);
             }
-
-            stopwatch.Stop();
-
-            await relatorioWriter.WriteLineAsync($"{limit};{stopwatch.ElapsedMilliseconds}");
-
-            Console.WriteLine("O bloco {0} processou em {1} milissegundos", limit, stopwatch.ElapsedMilliseconds);
         }
     }
 
@@ -56,7 +62,7 @@ public abstract class BaseService : IBaseService
 
         var reportPatch = Path.Combine(basePath, "report");
         if (Directory.Exists(reportPatch))
-            Directory.Delete(Path.Combine(basePath, "report"), true);
+            Directory.Delete(reportPatch, true);
 
         Directory.CreateDirectory(reportPatch);
 

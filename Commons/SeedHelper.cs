@@ -15,7 +15,7 @@ public static class SeedHelper
             .RuleFor(p => p.DataNascimento, f => f.Date.Past(40, DateTime.Today.AddYears(-18)))
             .RuleFor(p => p.Cidade, f => f.Address.City());
 
-        const int total = 1_000_000;
+        const int total = 10_000_000;
         const int batchSize = 10_000;
 
         for (int i = 0; i < total; i += batchSize)

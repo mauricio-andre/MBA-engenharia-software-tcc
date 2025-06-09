@@ -16,8 +16,9 @@ public class WorkerService : BaseService
         var pessoaClient = new Pessoa.PessoaClient(_grpcChannel);
 
         using var call = pessoaClient.GetPessoaList(new GetPessoaRequest { Skip = skip, Take = take });
-        await foreach (var response in call.ResponseStream.ReadAllAsync())
+        while (await call.ResponseStream.MoveNext())
         {
+            var response = call.ResponseStream.Current;
             yield return new PessoaEntity()
             {
                 Id = response.Id,
